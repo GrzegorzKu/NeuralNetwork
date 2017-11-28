@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Neural Network</title>
+</head>
+
+<body>
+  <canvas id="maincanv" width="500" height="500"></canvas>
+  <span id="output"></span>
+  <br>
+  <button id="btn">Add 500</button>
+
+  <script src="NeuralCell.js"></script>
+  <script src="GraphXY.js"></script>
+  <script>
+    canvas = document.getElementById("maincanv")
+    ctx = canvas.getContext("2d")
+
+    graph = new GraphXY(ctx)
+
+    var f = (x) => { return -0.6 * x + 30 }
+
+    document
+      .getElementById("btn")
+      .addEventListener("click", (e) => {
+        for (let i = 0; i < 500; i++) {
+          x = Math.random() * 1000 - 500
+          y = Math.random() * 1000 - 500
+
+          c = (y > f(x) ? "red" : "blue")
+
+          graph.addPoint(x, y, c)
+          //graph.addPoint(x,f(x),"green")
+        }
+
+        graph.draw()
+      })
+
+    graph.draw()
+  </script>
+</body>
+
+</html>
