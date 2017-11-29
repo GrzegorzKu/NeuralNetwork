@@ -14,18 +14,6 @@ class GraphXY {
     this.dots = []
   }
 
-  addPoint(x, y, c) {
-    this.dots.push(new Dot(x, y, c))
-  }
-  getPoint(n) {
-    return this.dots[n]
-  }
-
-  draw(){
-    this._drawBackground()
-    this._drawDots()
-  }
-
   _drawBackground() {
     this.ctx.fillStyle = "white"
     this.ctx.strokeStyle = "black"
@@ -43,12 +31,24 @@ class GraphXY {
 
     this.ctx.stroke()
   }
-  _drawDots(){
-    this.dots.forEach( (v) => {
+  _drawDots() {
+    this.dots.forEach((v) => {
       this.ctx.beginPath()
       this.ctx.fillStyle = v.color
-      this.ctx.arc(v.x + this.width/2, -v.y + this.height/2, 4, 0, Math.PI*2)
+      this.ctx.arc(v.x + this.width / 2, -v.y + this.height / 2, 4, 0, Math.PI * 2)
       this.ctx.fill()
     }, this)
   }
+  addPoint(x, y, c) {
+    this.dots.push(new Dot(x, y, c))
+  }
+  getPoint(n) {
+    return this.dots[n]
+  }
+
+  draw() {
+    this._drawBackground()
+    this._drawDots()
+  }
+
 }

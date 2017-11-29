@@ -6,39 +6,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Neural Network</title>
+  <style>
+    body {
+      background-color: #ddd;
+    }
+  </style>
 </head>
 
 <body>
-  <canvas id="maincanv" width="500" height="500"></canvas>
+  <canvas id="maincanv" width="500" height="500"></canvas><br>
   <span id="output"></span>
   <br>
   <button id="btn">Add 500</button>
 
   <script src="NeuralCell.js"></script>
+  <script src="NeuralLayer.js"></script>
+  <script src="NeuralNetwork.js"></script>
+  <script src="TestSet.js"></script>
   <script src="GraphXY.js"></script>
   <script>
-    canvas = document.getElementById("maincanv")
-    ctx = canvas.getContext("2d")
+    class UnipolarNeuralCell extends NeuralCell {
+      constructor(inputs) {
+        super(inputs)
 
-    graph = new GraphXY(ctx)
+        for (let i = 0; i < this.getInputSize(); i++) {
+          let w = Math.random() * 2 - 1
+          this.setInputWeight(i, w)
+        }
+      }
+      _activationFunction(val) {
+        return 1 / (1 + Math.E ** (-2 * val))
+      }
+    }
 
-    var f = (x) => { return -0.6 * x + 30 }
+    var canvas = document.getElementById("maincanv")
+    var ctx = canvas.getContext("2d")
+
+    var graph = new GraphXY(ctx)
+
+    var network = new NeuralNetwork()
+    //3 inputs, 2 neurons
+    network.addLayer(new NeuralLayer(3, 2, UnipolarNeuralCell))
+    //2 inputs, 1 neurons
+    network.addLayer(new NeuralLayer(2, 1, UnipolarNeuralCell))
+
+    network.getLayer(0).setInput(2, 1.0)  //bias
+
+    var xorTestSet = new TestSet()
+    xorTestSet.addQuestion([0,0],[0])
+    xorTestSet.addQuestion([1,1],[0])
+    xorTestSet.addQuestion([1,0],[1])
+    xorTestSet.addQuestion([0,1],[1])
+
+
+    function btnClick() {
+      let res = xorTestSet.testNetwork(network)
+      console.log(res)
+
+      let span = document.getElementById("output")
+      res.results.forEach( (e)=>{
+        span.innerHTML +=
+          "input [" + e.input_data.toString() + "] " +
+          "answer [" + e.properly_answer.toString() + "] " +
+          "network [" + e.network_answer.toString() + "] <br>"
+      })
+    }
 
     document
       .getElementById("btn")
-      .addEventListener("click", (e) => {
-        for (let i = 0; i < 500; i++) {
-          x = Math.random() * 1000 - 500
-          y = Math.random() * 1000 - 500
-
-          c = (y > f(x) ? "red" : "blue")
-
-          graph.addPoint(x, y, c)
-          //graph.addPoint(x,f(x),"green")
-        }
-
-        graph.draw()
-      })
+      .addEventListener("click", btnClick)
 
     graph.draw()
   </script>

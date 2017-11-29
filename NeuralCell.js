@@ -5,7 +5,26 @@ class NeuralCell {
 
     this.teach_ratio = 0
 
-    addInput(inputs)
+    this.modified = true
+    this.last_output = 0.0
+
+    this.addInput(inputs)
+  }
+
+  _processDendrite(n) {
+    return this.dendrites[n] * this.synapses[n]
+  }
+  _processMembrane() {
+    if (this.getInputSize() == 0)
+      return -1
+
+    let sum = 0
+    for (let i = 0; i < this.getInputSize(); i++)
+      sum += this._processDendrite(i)
+    return sum
+  }
+  _activationFunction(val) {
+    return val
   }
 
   addInput(number = 1) {
@@ -13,6 +32,7 @@ class NeuralCell {
       this.dendrites.push(0.0)
       this.synapses.push(1.0)
     }
+    this.modified = true
   }
 
   getInputSize() {
@@ -24,6 +44,7 @@ class NeuralCell {
   }
   setInputValue(n, v) {
     this.dendrites[n] = v
+    this.modified = true
   }
 
   getInputWeight(n) {
@@ -31,22 +52,14 @@ class NeuralCell {
   }
   setInputWeight(n, v) {
     this.synapses[n] = v
-  }
-
-  _processDendrite(n) {
-    return this.dendrites[n] * this.synapses[n]
-  }
-  _processMembrane() {
-    let sum = 0
-    for (let i = 0; i < this.getInputSize(); i++)
-      sum += _processDendrite(i)
-    return sum
-  }
-  _activationFunction(val) {
-    return val
+    this.modified = true
   }
 
   getOutput() {
-    return _activationFunction(_processMembrane())
+    if (this.modified == true) {
+      this.modified = false
+      this.last_output = this._activationFunction(this._processMembrane())
+    }
+    return this.last_output
   }
 }
